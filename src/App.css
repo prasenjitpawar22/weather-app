@@ -1,38 +1,41 @@
-.App {
-  text-align: center;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.leaflet-div-icon {
+  background: none;
+  border: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.cloud {
+  position: absolute;
+  width: 205px;
+  height: 70px;
+  background-color: white;
+  border-radius: 100px;
+  margin: 120px auto 20px 50px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.cloud::after,
+.cloud::before {
+  content: "";
+  position: absolute;
+  background-color: #ffff;
+  z-index: -1 !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.cloud::after {
+  width: 90px;
+  height: 100px;
+  top: -30px;
+  left: 20px;
+  border-radius: 200px;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.cloud:before {
+  width: 100px;
+  height: 100px;
+  top: -50px;
+  right: 20px;
+  border-radius: 200px;
 }
