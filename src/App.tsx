@@ -7,7 +7,7 @@ import axios from "axios";
 import moment, { Moment, tz } from "moment-timezone";
 
 import { Data } from "./types";
-import { delay } from "./utils";
+import { delay, getRandomFloatInRange, getRandomNumberInRange } from "./utils";
 import "leaflet/dist/leaflet.css";
 import "./App.css";
 
@@ -28,6 +28,12 @@ function App() {
 
   const [data, setData] = useState<Data>();
   const [time, setTime] = useState<Moment>(); // time - clock
+  const [clouds, setClouds] = useState<{
+    number: number;
+    scale: number[] | string[];
+    top: number[];
+    speed: number[];
+  }>(); // no. of clouds to render and their props
   const [tempTextClass, setTempTextClass] = useState({
     class: "",
     colorCode: "",
@@ -55,7 +61,7 @@ function App() {
   // handle time, tempColor when data obj change
   useEffect(() => {
     const interval = setInterval(() => handleTime(), 1000);
-    console.log(data);
+    // console.log(data);
 
     // temp text set
     if (data?.current?.temp_c) {
@@ -71,8 +77,15 @@ function App() {
       }
       setCardLoading(false);
     }
+
+    generateCloud();
+
     return () => clearInterval(interval);
   }, [data]);
+
+  useEffect(() => {
+    console.log(clouds);
+  }, [clouds]);
 
   // update time fun
   function handleTime() {
@@ -84,14 +97,106 @@ function App() {
     }
   }
 
+  // generate clouds if any
+  function generateCloud() {
+    if (data?.current?.cloud) {
+      const number_of_clouds = data.current.cloud; // no. of clouds
+      let widths: number[] | string[]; // list for random widths
+      let top: number[];
+      let speed: number[];
+
+      switch (true) {
+        case number_of_clouds >= 0 && number_of_clouds < 20:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(1, 0.4)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+          setClouds({ number: 4, scale: widths, top: top, speed });
+          break;
+        case number_of_clouds >= 20 && number_of_clouds < 40:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(1, 0.4)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+
+          setClouds({ number: 8, scale: widths, speed, top: top });
+          break;
+        case number_of_clouds >= 40 && number_of_clouds < 60:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(1, 0.4)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+
+          setClouds({ number: 12, scale: widths, speed, top: top });
+          break;
+        case number_of_clouds >= 60 && number_of_clouds < 80:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(1, 0.4)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+
+          setClouds({ number: 15, scale: widths, speed, top: top });
+          break;
+        case number_of_clouds >= 80 && number_of_clouds <= 100:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(1, 0.4)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+
+          setClouds({ number: 15, scale: widths, speed, top: top });
+          break;
+        default:
+          widths = Array.from({ length: number_of_clouds }, () =>
+            getRandomFloatInRange(40, 200)
+          );
+          top = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(2, 90)
+          );
+          speed = Array.from({ length: number_of_clouds }, () =>
+            getRandomNumberInRange(15, 40)
+          );
+
+          setClouds({ number: 6, scale: widths, speed, top: top });
+          break;
+      }
+    }
+  }
+
   // get the api call
   const getWeather = async () => {
     axios
       .get(
-        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=zagora`
+        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=new-york`
       )
       .then((res) => {
         const data: Data = res.data;
+        console.log(data);
+
         setData(data);
         setLoading(false);
       })
@@ -116,18 +221,27 @@ function App() {
         </>
       ) : (
         <>
-          <div
+          {/* <div
             style={{ background: tempTextClass.colorCode }}
             className="opacity-30 h-screen w-full absolute z-[555]"
-          ></div>
+          ></div> */}
 
           {/* cloud  */}
-          {/* <div
-            style={{
-              filter: `drop-shadow(0px 4px 8px ${tempTextClass.colorCode})`,
-            }}
-            className="cloud z-[555]"
-          ></div> */}
+          {clouds?.number && clouds.speed
+            ? Array.from({ length: clouds.number }, (_, i) => {
+                return (
+                  <div
+                    style={{
+                      transform: `scale(${clouds.scale[i]})`,
+                      top: `${clouds.top[i]}%`,
+                      animationDuration: `${clouds.speed[i]}s`,
+                    }}
+                    key={i}
+                    className={`cloud animate-[cloud-move_30s_linear_infinite]`}
+                  ></div>
+                );
+              })
+            : null}
 
           <MapContainer
             style={{ width: "100%", height: "100vh" }}
@@ -152,12 +266,12 @@ function App() {
           </MapContainer>
 
           {cardLoading ? null : (
-            <div className="absolute z-[999] p-4 w-[230] right-0">
+            <div className="absolute z-[999] p-4 sm:w-[200px] md:w-[270px] right-0">
               <div
                 style={{
                   background: `linear-gradient(90deg, ${tempTextClass.colorCode} 0%, rgba(255,255,255,1) 120%)`,
                 }}
-                className={`text-center rounded-md shadow-lg sm:m-2 md:m-12 p-[20px] flex-col flex items-center justify-center`}
+                className={`text-center rounded-md shadow-lg sm:m-0 md:m-12 p-[20px] flex-col flex items-center justify-center`}
               >
                 <img
                   style={{

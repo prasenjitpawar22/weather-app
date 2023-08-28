@@ -6,8 +6,13 @@ module.exports = {
       animation: {
         "bounce-ball": "bounce-ball 1s linear infinite alternate",
         "shadow-ball": "shadow-ball .5s ease-in-out infinite alternate",
+        cloud_move: "cloud-move 20s linear infinite",
       },
       keyframes: {
+        "cloud-move": {
+          "0%": { left: "-400px" },
+          "100%": { left: "100%" },
+        },
         "bounce-ball": {
           "0%, 100%": {
             top: "25%",
