@@ -34,6 +34,9 @@ function App() {
     top: number[];
     speed: number[];
   }>(); // no. of clouds to render and their props
+  const [isRain, setIsRain] = useState(false); // check if rain default no-rain
+  const [isNigth, setIsNight] = useState(false); // check if night default day
+
   const [tempTextClass, setTempTextClass] = useState({
     class: "",
     colorCode: "",
@@ -58,6 +61,11 @@ function App() {
     })();
   }, []);
 
+  // call the api
+  useEffect(() => {
+    console.log(isNigth, "asad");
+  }, [isNigth]);
+
   // handle time, tempColor when data obj change
   useEffect(() => {
     const interval = setInterval(() => handleTime(), 1000);
@@ -79,21 +87,32 @@ function App() {
     }
 
     generateCloud();
-
+    setIsDayIsRain();
     return () => clearInterval(interval);
   }, [data]);
-
-  useEffect(() => {
-    console.log(clouds);
-  }, [clouds]);
 
   // update time fun
   function handleTime() {
     if (data?.location?.localtime && data.location.tz_id) {
       const { localtime, tz_id } = data.location;
       let time = moment(new Date()).tz(tz_id);
-      // console.log(time.format("HH:mm:ss"));
       setTime(time);
+    }
+  }
+
+  // check if day and rain
+  function setIsDayIsRain() {
+    if (data?.current?.condition.text && data.current.is_day !== undefined) {
+      if (data.current.is_day) {
+        setIsNight(true);
+      } else {
+        setIsNight(false);
+      }
+      if (data.current.condition.text.toLowerCase().includes("rain")) {
+        setIsRain(true);
+      } else {
+        setIsRain(false);
+      }
     }
   }
 
@@ -191,7 +210,7 @@ function App() {
   const getWeather = async () => {
     axios
       .get(
-        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=new-york`
+        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=sydney`
       )
       .then((res) => {
         const data: Data = res.data;
@@ -221,10 +240,11 @@ function App() {
         </>
       ) : (
         <>
-          {/* <div
-            style={{ background: tempTextClass.colorCode }}
-            className="opacity-30 h-screen w-full absolute z-[555]"
-          ></div> */}
+          {isNigth ? (
+            <div className="opacity-30 bg-black h-screen w-full absolute z-[555]"></div>
+          ) : (
+            <div className="opacity-30 bg-blue-300 h-screen w-full absolute z-[555]"></div>
+          )}
 
           {/* cloud  */}
           {clouds?.number && clouds.speed
@@ -235,10 +255,31 @@ function App() {
                       transform: `scale(${clouds.scale[i]})`,
                       top: `${clouds.top[i]}%`,
                       animationDuration: `${clouds.speed[i]}s`,
+                      background: isNigth ? "#D2D9E0" : "#daefff",
                     }}
                     key={i}
                     className={`cloud animate-[cloud-move_30s_linear_infinite]`}
-                  ></div>
+                  >
+                    {isRain ? (
+                      <div className="rain">
+                        <div className="drop d1"></div>
+                        <div className="drop d2"></div>
+                        <div className="drop d3"></div>
+                        <div className="drop d4"></div>
+                        <div className="drop d5"></div>
+                        <div className="drop d6"></div>
+                        <div className="drop d7"></div>
+                        <div className="drop d8"></div>
+                        <div className="drop d9"></div>
+                        <div className="drop d10"></div>
+                        <div className="drop d11"></div>
+                        <div className="drop d12"></div>
+                        <div className="drop d13"></div>
+                        <div className="drop d14"></div>
+                        <div className="drop d15"></div>
+                      </div>
+                    ) : null}
+                  </div>
                 );
               })
             : null}
@@ -266,12 +307,12 @@ function App() {
           </MapContainer>
 
           {cardLoading ? null : (
-            <div className="absolute z-[999] p-4 sm:w-[200px] md:w-[270px] right-0">
+            <div className="absolute z-[999] p-4 right-0 overflow-hidden">
               <div
                 style={{
                   background: `linear-gradient(90deg, ${tempTextClass.colorCode} 0%, rgba(255,255,255,1) 120%)`,
                 }}
-                className={`text-center rounded-md shadow-lg sm:m-0 md:m-12 p-[20px] flex-col flex items-center justify-center`}
+                className={`text-center rounded-md p-2 shadow-lg sm:m-0 md:m-12 flex-col flex items-center justify-center`}
               >
                 <img
                   style={{

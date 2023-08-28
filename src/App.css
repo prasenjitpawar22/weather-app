@@ -11,7 +11,7 @@
   position: absolute;
   width: 205px;
   height: 70px;
-  background: #e6f8ff;
+  /* background: #daefff; */
   border-radius: 100px;
   box-shadow: 0 8px 5px rgba(0, 0, 0, 0.1);
   z-index: 9999;
@@ -38,4 +38,129 @@
   top: -50px;
   right: 20px;
   border-radius: 200px;
+}
+
+@keyframes fall {
+  to {
+    margin-top: 150px;
+    opacity: 0;
+  }
+}
+
+.rain {
+  position: absolute;
+  height: 80%;
+  width: 100%;
+  color: #002266;
+}
+
+.drop {
+  position: absolute;
+  background: linear-gradient(#000000, #ffffff);
+  opacity: 2;
+  top: 25px;
+}
+
+.d1 {
+  left: 97%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.94s linear 0.69s infinite;
+}
+
+.d2 {
+  left: 18%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.98s linear 0.57s infinite;
+}
+.d3 {
+  left: 38%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.66s linear 0.6s infinite;
+}
+
+.d4 {
+  left: 64%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.69s linear 0.76s infinite;
+}
+
+.d5 {
+  left: 95%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.75s linear 0.56s infinite;
+}
+
+.d6 {
+  left: 65%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.75s linear 0.92s infinite;
+}
+
+.d7 {
+  left: 19%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.92s linear 0.72s infinite;
+}
+
+.d8 {
+  left: 55%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.84s linear 0.99s infinite;
+}
+
+.d9 {
+  left: 35%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.79s linear 0.53s infinite;
+}
+
+.d10 {
+  left: 83%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.82s linear 0.97s infinite;
+}
+
+.d11 {
+  left: 8%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.75s linear 0.56s infinite;
+}
+
+.d12 {
+  left: 1%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.6s linear 0.59s infinite;
+}
+
+.d13 {
+  left: 13%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.5s linear 0.5s infinite;
+}
+
+.d14 {
+  left: 13%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.8s linear 0.63s infinite;
+}
+
+.d15 {
+  left: 13%;
+  width: 1%;
+  height: 5%;
+  animation: fall 0.68s linear 0.75s infinite;
 }
