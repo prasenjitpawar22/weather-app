@@ -2,7 +2,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
 import { divIcon } from "leaflet";
 import { MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import moment, { Moment, tz } from "moment-timezone";
 
@@ -37,6 +37,8 @@ function App() {
   const [isRain, setIsRain] = useState(false); // check if rain default no-rain
   const [isNigth, setIsNight] = useState(false); // check if night default day
 
+  const [city, setCity] = useState("new-york");
+
   const [tempTextClass, setTempTextClass] = useState({
     class: "",
     colorCode: "",
@@ -52,7 +54,7 @@ function App() {
     html: iconMarkup,
   });
 
-  // call the api
+  // call the api // initail render
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -61,17 +63,10 @@ function App() {
     })();
   }, []);
 
-  // call the api
-  useEffect(() => {
-    console.log(isNigth, "asad");
-  }, [isNigth]);
-
-  // handle time, tempColor when data obj change
+  // handle time, tempColor when data (api calls) obj change
   useEffect(() => {
     const interval = setInterval(() => handleTime(), 1000);
-    // console.log(data);
 
-    // temp text set
     if (data?.current?.temp_c) {
       setCardLoading(true);
       for (const range of temperatureRanges) {
@@ -103,10 +98,10 @@ function App() {
   // check if day and rain
   function setIsDayIsRain() {
     if (data?.current?.condition.text && data.current.is_day !== undefined) {
-      if (data.current.is_day) {
-        setIsNight(true);
-      } else {
+      if (data.current.is_day == 1) {
         setIsNight(false);
+      } else {
+        setIsNight(true);
       }
       if (data.current.condition.text.toLowerCase().includes("rain")) {
         setIsRain(true);
@@ -210,11 +205,10 @@ function App() {
   const getWeather = async () => {
     axios
       .get(
-        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=sydney`
+        `https://api.weatherapi.com/v1/current.json?key=${process.env.REACT_APP_WEATHER_API_KEY}&q=${city}`
       )
       .then((res) => {
         const data: Data = res.data;
-        console.log(data);
 
         setData(data);
         setLoading(false);
@@ -223,6 +217,15 @@ function App() {
         console.log(e);
         setLoading(false);
       });
+  };
+
+  // serach input submit
+  const handleFormSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    (async () => {
+      setLoading(true);
+      await getWeather();
+    })();
   };
 
   return (
@@ -245,6 +248,28 @@ function App() {
           ) : (
             <div className="opacity-30 bg-blue-300 h-screen w-full absolute z-[555]"></div>
           )}
+
+          {/* form  */}
+          <form
+            onSubmit={handleFormSubmit}
+            className="absolute flex gap-2 top-12 left-1/2  -translate-x-1/2  z-[555]"
+          >
+            <input
+              type={"text"}
+              placeholder="City name"
+              className="border-2 border-slate-700 focus:outline-none px-3 py-1 rounded text-slate-700 leading-tight 
+              shadow-outline "
+              value={city}
+              defaultValue={""}
+              onChange={(e) => setCity(e.target.value)}
+            />
+            <input
+              type={"submit"}
+              value={"Search"}
+              className="border-2 border-slate-600 px-1 rounded hover:text-white hover:bg-slate-700
+              transition duration-200 cursor-pointer text-slate-600"
+            />
+          </form>
 
           {/* cloud  */}
           {clouds?.number && clouds.speed
@@ -307,7 +332,7 @@ function App() {
           </MapContainer>
 
           {cardLoading ? null : (
-            <div className="absolute z-[999] p-4 right-0 overflow-hidden">
+            <div className="absolute z-[999] p-4 max-w-[300px] min-w-[250px] bottom-0 right-0 overflow-hidden">
               <div
                 style={{
                   background: `linear-gradient(90deg, ${tempTextClass.colorCode} 0%, rgba(255,255,255,1) 120%)`,
