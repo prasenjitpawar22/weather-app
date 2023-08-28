@@ -229,7 +229,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative overflow-hidden ">
       {loading ? (
         <>
           <div
