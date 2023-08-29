@@ -84,7 +84,7 @@ function App() {
     generateCloud();
     setIsDayIsRain();
     return () => clearInterval(interval);
-  }, [data]);
+  }, [loading]);
 
   // update time fun
   function handleTime() {
@@ -113,14 +113,14 @@ function App() {
 
   // generate clouds if any
   function generateCloud() {
-    if (data?.current?.cloud) {
+    if (data?.current?.cloud && data.current.cloud !== 0) {
       const number_of_clouds = data.current.cloud; // no. of clouds
       let widths: number[] | string[]; // list for random widths
       let top: number[];
       let speed: number[];
 
       switch (true) {
-        case number_of_clouds >= 0 && number_of_clouds < 20:
+        case number_of_clouds >= 2 && number_of_clouds < 20:
           widths = Array.from({ length: number_of_clouds }, () =>
             getRandomFloatInRange(1, 0.4)
           );
@@ -198,6 +198,8 @@ function App() {
           setClouds({ number: 6, scale: widths, speed, top: top });
           break;
       }
+    } else {
+      setClouds({ number: 0, scale: [0], speed: [0], top: [0] });
     }
   }
 
@@ -209,7 +211,6 @@ function App() {
       )
       .then((res) => {
         const data: Data = res.data;
-
         setData(data);
         setLoading(false);
       })
@@ -229,7 +230,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col relative overflow-hidden ">
+    <div className="flex flex-col relative overflow-hidden">
       {loading ? (
         <>
           <div
@@ -260,7 +261,6 @@ function App() {
               className="border-2 border-slate-700 focus:outline-none px-3 py-1 rounded text-slate-700 leading-tight 
               shadow-outline "
               value={city}
-              defaultValue={""}
               onChange={(e) => setCity(e.target.value)}
             />
             <input
